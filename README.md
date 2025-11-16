@@ -155,9 +155,9 @@ GET	/report/{candidate_id}	Get final interview report
 - AI scoring of responses
 
 👨‍💻 Author
-Aditi Raut
-AI & Full Stack Developer
-GitHub: https://github.com/aditi1305-raut
+- Aditi Raut
+- AI & Full Stack Developer
+- GitHub: https://github.com/aditi1305-raut
 Email: aditiraut306@gmail.com
 
 📄 License
