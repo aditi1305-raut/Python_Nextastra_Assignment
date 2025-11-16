@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+python-multipart
+aiofiles
+sqlalchemy
+pydantic
+opencv-python-headless
+mediapipe
+numpy
+pillow
+gTTS
+python-dotenv

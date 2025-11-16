@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+
+    <h2>Candidate Registration</h2>
+
+    <label>Name:</label>
+    <input id="name" placeholder="Enter your name">
+
+    <label>Email:</label>
+    <input id="email" placeholder="Enter your email">
+
+    <button onclick="register()">Register</button>
+
+</div>
+
+<script>
+async function register() {
+    const fd = new FormData();
+    fd.append("name", name.value);
+    fd.append("email", email.value);
+
+    const resp = await fetch("http://127.0.0.1:8001/candidate/register", {
+        method: "POST",
+        body: fd
+    });
+
+    const data = await resp.json();
+    alert("Registered! Candidate ID = " + data.candidate_id);
+
+    localStorage.setItem("candidate_id", data.candidate_id);
+
+    // ——— ROUTING FIX ———
+    window.location.href = "interview.html";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interview Questions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+
+    <h2>Interview Questions</h2>
+
+    <div id="questions"></div>
+
+    <h3>Live Transcript</h3>
+    <div id="transcript"></div>
+
+</div>
+
+<script>
+let candidate_id = localStorage.getItem("candidate_id");
+
+async function loadQuestions() {
+    const resp = await fetch("http://127.0.0.1:8001/generate_questions");
+    const data = await resp.json();
+
+    const container = document.getElementById("questions");
+    container.innerHTML = "";
+
+    data.questions.forEach(q => {
+        container.innerHTML += `
+            <div class="question-box">
+                <p><b>Q:</b> ${q}</p>
+                <button onclick="askQuestion('${q}')">Ask (TTS)</button>
+            </div>
+        `;
+    });
+}
+
+async function askQuestion(q) {
+    const fd = new FormData();
+    fd.append("text", q);
+
+    const resp = await fetch("http://127.0.0.1:8001/tts", {
+        method: "POST",
+        body: fd
+    });
+
+    const blob = await resp.blob();
+    new Audio(URL.createObjectURL(blob)).play();
+
+    // RECORD ANSWER
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const recorder = new MediaRecorder(stream);
+    let chunks = [];
+
+    recorder.ondataavailable = e => chunks.push(e.data);
+
+    recorder.onstop = async () => {
+        let audioBlob = new Blob(chunks, { type: "audio/webm" });
+
+        const fd2 = new FormData();
+        fd2.append("file", audioBlob);
+        fd2.append("candidate_id", candidate_id);
+
+        const r = await fetch("http://127.0.0.1:8001/upload_audio", {
+            method: "POST",
+            body: fd2
+        });
+
+        const jr = await r.json();
+
+        transcript.innerHTML += `<b>Q:</b> ${q}<br><b>A:</b> ${jr.transcript}<br><br>`;
+    };
+
+    recorder.start();
+    setTimeout(() => recorder.stop(), 7000);
+}
+
+loadQuestions();
+</script>
+
+</body>
+</html>

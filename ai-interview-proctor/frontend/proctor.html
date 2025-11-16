@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Proctoring</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+
+    <h2>Proctoring</h2>
+
+    <video id="video" autoplay></video>
+
+    <button onclick="stopProctoring()">Stop Proctoring</button>
+
+</div>
+
+<script>
+let candidate_id = localStorage.getItem("candidate_id");
+let interval;
+const video = document.getElementById("video");
+
+navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+    video.srcObject = stream;
+});
+
+function startProctoring() {
+    interval = setInterval(async () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        canvas.getContext("2d").drawImage(video, 0, 0);
+        let frame = canvas.toDataURL("image/jpeg");
+
+        const fd = new FormData();
+        fd.append("frame_b64", frame);
+        fd.append("candidate_id", candidate_id);
+
+        await fetch("http://127.0.0.1:8001/frame_proctor", {
+            method: "POST",
+            body: fd
+        });
+    }, 2500);
+}
+
+function stopProctoring() {
+    clearInterval(interval);
+    alert("Proctoring Stopped");
+
+    // ——— ROUTING FIX ———
+    location.href = "interview.html";
+}
+
+startProctoring();
+</script>
+
+</body>
+</html>

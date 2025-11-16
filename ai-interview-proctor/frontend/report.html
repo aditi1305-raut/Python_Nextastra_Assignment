@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Interview Report</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .report-container {
+            width: 90%;
+            max-width: 900px;
+            background: white;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2b4eff;
+        }
+
+        .session-card {
+            padding: 20px;
+            background: #eef2ff;
+            border-left: 6px solid #4a7dfc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .flag {
+            padding: 6px 10px;
+            margin: 4px;
+            border-radius: 6px;
+            display: inline-block;
+            background: #ffdddd;
+            color: #b30000;
+            font-size: 14px;
+        }
+
+        .no-flag {
+            padding: 6px 10px;
+            background: #ddffdd;
+            color: #006600;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="report-container">
+    <h2 style="text-align:center;">AI Interview Report</h2>
+
+    <div id="summary"></div>
+
+    <div id="sessions"></div>
+
+    <button class="back-btn" onclick="location.href='interview.html'">Back</button>
+</div>
+
+
+<script>
+let candidate_id = localStorage.getItem("candidate_id");
+
+async function loadReport() {
+    const resp = await fetch(`http://127.0.0.1:8001/report/${candidate_id}`);
+    const data = await resp.json();
+
+    document.getElementById("summary").innerHTML = `
+        <div class="section-title">Candidate Information</div>
+        <p><b>Candidate ID:</b> ${data.candidate_id}</p>
+        <hr>
+        <div class="section-title">Interview Summary</div>
+        <p>Total Questions Answered: <b>${data.sessions.length}</b></p>
+        <p>Date: <b>${new Date().toLocaleString()}</b></p>
+        <hr>
+    `;
+
+    let sessionsHTML = "";
+
+    data.sessions.forEach((session, idx) => {
+        let flagsHTML = "";
+
+        if (session.proctoring_flags.length > 0) {
+            session.proctoring_flags.forEach(flag => {
+                flagsHTML += `<span class="flag">${flag}</span>`;
+            });
+        } else {
+            flagsHTML = `<span class="no-flag">No Alerts</span>`;
+        }
+
+        sessionsHTML += `
+            <div class="session-card">
+                <p><b>Question ${idx + 1}</b></p>
+                <p><b>Transcript:</b> ${session.transcript}</p>
+                <p><b>Proctoring Flags:</b> ${flagsHTML}</p>
+            </div>
+        `;
+    });
+
+    document.getElementById("sessions").innerHTML = sessionsHTML;
+}
+
+loadReport();
+</script>
+
+</body>
+</html>
