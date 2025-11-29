@@ -158,7 +158,7 @@ GET	/report/{candidate_id}	Get final interview report
 - Aditi Raut
 - AI & Full Stack Developer
 - GitHub: https://github.com/aditi1305-raut
-Email: aditiraut306@gmail.com
+- Email: aditiraut306@gmail.com
 
 📄 License
 This project is licensed under the MIT License.
